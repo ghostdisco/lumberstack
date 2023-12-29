@@ -11,13 +11,13 @@ from logging import Logger, Handler
 # DEBUG = 10
 # NOTSET = 0
 
-class Lumberjack:
+class Lumberstack:
   last_msg: str = None
   history: list[str] = []
 
   def __init__(self, name: str = sys._getframe(1).f_locals['__name__'], log_level_override: int = None, retain_history: bool = False, capitalize_messages: bool = True) -> None:
     
-    self.name = name if 'lumberjack' not in name else sys._getframe(1).f_locals['__name__']
+    self.name = name if 'lumberstack' not in name else sys._getframe(1).f_locals['__name__']
     self.retain_history = retain_history
     self.capitalize_messages = capitalize_messages
 
@@ -46,7 +46,7 @@ class Lumberjack:
       fh.setFormatter(formatting)
       root_logger.addHandler(hdlr=fh)
       if log_level < logging.INFO:
-        Lumberjack(name='lumberjack').debug(f'File Handler Added: {log_filename}')
+        Lumberstack(name='lumberstack').debug(f'File Handler Added: {log_filename}')
     
     # set console handler
     if console_output:
@@ -54,7 +54,7 @@ class Lumberjack:
       ch.setFormatter(formatting)
       root_logger.addHandler(hdlr=ch)
       if log_level < logging.INFO:
-        Lumberjack(name='lumberjack').debug(f'Console Handler Added: STDOUT')
+        Lumberstack(name='lumberstack').debug(f'Console Handler Added: STDOUT')
     
     # add custom handlers
     if custom_handlers:
@@ -62,7 +62,7 @@ class Lumberjack:
         h.setFormatter(formatting)
         root_logger.addHandler(hdlr=h)
         if log_level < logging.INFO:
-          Lumberjack(name='lumberjack').debug(f'Custom Handler Added: {h.get_name()}')
+          Lumberstack(name='lumberstack').debug(f'Custom Handler Added: {h.get_name()}')
 
   # retrieve logger by name
   @staticmethod
@@ -73,7 +73,7 @@ class Lumberjack:
   @staticmethod
   def update_library_levels(libraries: list[str] = [], log_level: int = logging.root.level):
     for l in libraries:
-      Lumberjack.get_logger(name=l).setLevel(log_level)
+      Lumberstack.get_logger(name=l).setLevel(log_level)
 
   def critical(self, msg):
     self._log_(msg=msg, level=logging.CRITICAL)

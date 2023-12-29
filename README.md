@@ -1,4 +1,4 @@
-# Lumberjack
+# Lumberstack
 
 ### Global init in \_\_main\_\_
 #### Example to determine log file name
@@ -15,25 +15,25 @@ else:
 
 #### Only run global_init once in \_\_main\_\_
 ```
-Lumberjack.global_init(timezone=time.localtime if helpers.am_debugging else time.gmtime, log_filename=log_file_name, log_level=config.log_level, console_output=True)
+Lumberstack.global_init(timezone=time.localtime if helpers.am_debugging else time.gmtime, log_filename=log_file_name, log_level=config.log_level, console_output=True)
 ```
 
 #### Add a custom handler during global init
 ```
 fh = logging.FileHandler(filename='new.log')
-Lumberjack.global_init(log_level=config.log_level, custom_handlers=[fh])
+Lumberstack.global_init(log_level=config.log_level, custom_handlers=[fh])
 ```
 
 #### Update log levels of imported libraries using the logging package
 ```
-Lumberjack.update_library_levels(libraries=['requests', 'urllib3'], log_level=config.lib_log_level)
-Lumberjack.update_library_levels(libraries=['cli.azure.cli.core', 'cli.knack.cli', 'msal.authority', 'msal.application', 'msal.telemetry'], log_level=config.az_log_level)
+Lumberstack.update_library_levels(libraries=['requests', 'urllib3'], log_level=config.lib_log_level)
+Lumberstack.update_library_levels(libraries=['cli.azure.cli.core', 'cli.knack.cli', 'msal.authority', 'msal.application', 'msal.telemetry'], log_level=config.az_log_level)
 ```
 
 
 ### Local init for each file/module
 ```
-logger = Lumberjack()
+logger = Lumberstack()
 logger.info(f'{APP_NAME} - {APP_DESCRIPTION}')
 ```
 

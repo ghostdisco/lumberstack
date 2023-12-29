@@ -10,16 +10,16 @@ upload:
 	twine upload --skip-existing --repository pypi dist/*
 
 install-test:
-	pip install --index-url https://test.pypi.org/simple/ --no-deps lumberjack
+	pip install --index-url https://test.pypi.org/simple/ --no-deps lumberstack
 
 install:
-	pip install lumberjack
+	pip install lumberstack
 
 upgrade-test:
-	pip install -U --index-url https://test.pypi.org/simple/ --no-deps lumberjack
+	pip install -U --index-url https://test.pypi.org/simple/ --no-deps lumberstack
 
 upgrade:
-	pip install -U lumberjack
+	pip install -U lumberstack
 
 update-test: build upload-test upgrade-test
 

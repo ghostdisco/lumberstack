@@ -1,12 +1,13 @@
 import logging, requests
+from .custom_handler import CustomHandler
 
-logging.Handler
 
-class DiscordHandler(logging.Handler):
-    def __init__(self, webhook_url, log_level: int | str = None, name: str = None, 
-                 mention_id: str = None,
-                 mention_id_threshold: int = 30, mention_everyone_threshold: int = 0, mention_here_threshold: int = 0,
-                 error_logger: logging.Logger = None):
+class DiscordHandler(CustomHandler):
+    def __init__(self, webhook_url, level: int = 0, name: str = None, 
+                 mention_id: str = None, 
+                 mention_id_threshold: int = 30, mention_everyone_threshold: int = 0, mention_here_threshold: int = 0, 
+                 error_logger: logging.Logger = None, 
+                 remove_timestamp: bool = True, custom_formatting: str = None):
         """
         Generates log output to the supplied Discord webhook
         """
@@ -18,12 +19,12 @@ class DiscordHandler(logging.Handler):
         self.handling_mentions = (mention_id or mention_everyone_threshold or mention_here_threshold)
         self.error_logger = error_logger
 
-        logging.Handler.__init__(self)
-        self.set_name(name)
+        CustomHandler.__init__(self, level=level, name=name, custom_formatting=custom_formatting, remove_timestamp=remove_timestamp)
+            
         
-        # set a custom level for this handler
-        if log_level:
-            self.setLevel(log_level)
+    def _disable_timestamps_(self):
+        pass
+
 
     def emit(self, record: logging.LogRecord):
         

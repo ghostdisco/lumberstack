@@ -1,4 +1,4 @@
-import datetime, logging, sys, time
+import datetime, inspect, logging, os, sys, time, typing
 from logging import Logger, Handler
 
 # Documentation from logging library
@@ -15,9 +15,9 @@ class Lumberstack:
   last_msg: str = None
   history: list[str] = []
 
-  def __init__(self, name: str = sys._getframe(1).f_locals['__name__'], log_level_override: int = None, retain_history: bool = False, capitalize_messages: bool = True) -> None:
+  def __init__(self, name: str = os.path.basename(inspect.stack()[1].filename), log_level_override: int = None, retain_history: bool = False, capitalize_messages: bool = True) -> None:
     
-    self.name = name if 'lumberstack' not in name else sys._getframe(1).f_locals['__name__']
+    self.name = name if 'lumberstack' not in name else os.path.basename(inspect.stack()[1].filename)
     self.retain_history = retain_history
     self.capitalize_messages = capitalize_messages
 
@@ -74,6 +74,33 @@ class Lumberstack:
   def update_library_levels(libraries: list[str] = [], log_level: int = logging.root.level):
     for l in libraries:
       Lumberstack.get_logger(name=l).setLevel(log_level)
+
+  # forcibly override a logger's output level
+  @staticmethod
+  def force_update_library_levels(libraries: list[str] = [], log_level: int = logging.root.level):
+    if log_level == 0:
+      log_level = 100
+    
+    for l in libraries:
+      logger = Lumberstack.get_logger(name=l)
+      if log_level > logging.DEBUG:
+        logger.debug = Lumberstack._dummy_log_
+      if log_level > logging.INFO:
+        logger.info = Lumberstack._dummy_log_
+      if log_level > logging.WARN:
+        logger.warn = Lumberstack._dummy_log_
+        logger.warning = Lumberstack._dummy_log_
+      if log_level > logging.ERROR:
+        logger.error = Lumberstack._dummy_log_
+      if log_level > logging.FATAL:
+        logger.fatal = Lumberstack._dummy_log_
+        logger.critical = Lumberstack._dummy_log_
+
+  @staticmethod
+  def _dummy_log_(arg0: 'typing.any' = None, arg1: 'typing.any' = None, 
+                  arg2: 'typing.any' = None, arg3: 'typing.any' = None, 
+                  arg4: 'typing.any' = None, arg5: 'typing.any' = None):
+    pass
 
   def critical(self, msg):
     self._log_(msg=msg, level=logging.CRITICAL)

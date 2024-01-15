@@ -1,5 +1,7 @@
 import datetime, inspect, logging, os, sys, time, typing
 from logging import Logger, Handler
+from .constants import *
+from .custom_handler import CustomHandler
 
 # Documentation from logging library
 # CRITICAL = 50
@@ -27,7 +29,8 @@ class _Dummy_Logger_:
                   arg4: 'typing.any' = None, arg5: 'typing.any' = None):
     pass
 
-lumberstack_formatting: logging.Formatter
+root_formatting: logging.Formatter = DEFAULT_FORMAT_STRING
+mute_errors: bool
 
 class Lumberstack:
   last_msg: str = None
@@ -46,14 +49,16 @@ class Lumberstack:
 
   # run once from __main__
   @staticmethod
-  def global_init(timezone: time.struct_time = time.localtime, log_filename: str = None, log_level: int = logging.INFO, format: str = '%(asctime)s %(name)s %(levelname)s: %(message)s', console_output: bool = True, custom_handlers: list[Handler] = None, mute_errors_from_lumberstack: bool = False):
+  def global_init(timezone: time.struct_time = time.localtime, log_filename: str = None, log_level: int = logging.INFO, format_str: str = DEFAULT_FORMAT_STRING, console_output: bool = True, custom_handlers: list[logging.Handler] | list[CustomHandler] = None, mute_errors_from_lumberstack: bool = False):
 
     # initialize global instance of logger module
     logging.Formatter.converter = timezone
-    logging.basicConfig(filename=log_filename, level=log_level, format=format)
+    logging.basicConfig(filename=log_filename, level=log_level, format=format_str)
     root_logger = logging.getLogger()
-    global lumberstack_formatting
-    lumberstack_formatting = logging.Formatter(fmt=format)
+    global root_formatting
+    root_formatting = logging.Formatter(fmt=format_str)
+    global mute_errors
+    mute_errors = mute_errors_from_lumberstack
 
     # remove default handlers
     for h in root_logger.handlers:
@@ -62,40 +67,52 @@ class Lumberstack:
     # set file handler
     if log_filename:
       fh = logging.FileHandler(filename=log_filename)
-      fh.setFormatter(lumberstack_formatting)
+      fh.setFormatter(root_formatting)
       root_logger.addHandler(hdlr=fh)
-      if not mute_errors_from_lumberstack and log_level < logging.INFO:
+      if not mute_errors and log_level < logging.INFO:
         Lumberstack(name='lumberstack').debug(f'File Handler Added: {log_filename}')
 
     # set console handler
     if console_output:
       ch = logging.StreamHandler(stream=sys.stdout)
-      ch.setFormatter(lumberstack_formatting)
+      ch.setFormatter(root_formatting)
       root_logger.addHandler(hdlr=ch)
-      if not mute_errors_from_lumberstack and log_level < logging.INFO:
+      if not mute_errors and log_level < logging.INFO:
         Lumberstack(name='lumberstack').debug(f'Console Handler Added: STDOUT')
     
     # add custom handlers
     if custom_handlers:
-      for h in custom_handlers:
-        h.setFormatter(lumberstack_formatting)
-        root_logger.addHandler(hdlr=h)
-        if not mute_errors_from_lumberstack and log_level < logging.INFO:
-          Lumberstack(name='lumberstack').debug(f'Handler Added: {type(h).__name__}{" - " + h.name if h.name else ""}')
+      Lumberstack.add_handlers(handlers=custom_handlers)
 
     # mute me if you desire
-    if mute_errors_from_lumberstack:
+    if mute_errors:
       Lumberstack.mute_library_logging(libraries='lumberstack')
 
   # add a handler
   @staticmethod
-  def add_handlers(handlers: Handler | list[Handler]) -> None:
+  def add_handlers(handlers: Handler | list[Handler] | CustomHandler | list[CustomHandler]) -> None:
     if isinstance(handlers, Handler):
       handlers = [handlers]
+    elif isinstance(handlers, CustomHandler):
+      handlers = [handlers]
 
-    global lumberstack_formatting
+    global root_formatting
     for h in handlers:
-      h.setFormatter(lumberstack_formatting)
+
+      # use our root_formatting if one has not been set
+      if not h.formatter:
+        h.setFormatter(root_formatting)
+
+      # remove timestamp if set to do so by CustomHandler
+      if isinstance(h, CustomHandler):
+        if h.remove_timestamp and h.formatter._fmt:
+          if isinstance(h.formatter._style, logging.PercentStyle):
+            h.setFormatter(logging.Formatter(h.formatter._fmt.replace('%(asctime)s', '').strip()))
+          elif isinstance(h.formatter._style, logging.StrFormatStyle):
+            h.setFormatter(logging.Formatter(h.formatter._fmt.replace('{asctime}', '').strip()))
+          elif isinstance(h.formatter._style, logging.StrFormatStyle):
+            h.setFormatter(logging.Formatter(h.formatter._fmt.replace('${asctime}', '').strip()))
+      
       logging.getLogger().addHandler(hdlr=h)
       Lumberstack(name='lumberstack').debug(f'Handler Added: {type(h).__name__}{" - " + h.name if h.name else ""}')
 

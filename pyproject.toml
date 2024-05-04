@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lumberstack"
-version = "24.01.1500"
+version = "24.05.0301"
 authors = [
   { name="ghostdisco", email="pypi@ghostdisco.me" },
 ]

@@ -55,6 +55,7 @@ class Lumberstack:
     logging.Formatter.converter = timezone
     logging.basicConfig(filename=log_filename, level=log_level, format=format_str)
     root_logger = logging.getLogger()
+    root_logger.setLevel(log_level)
     global root_formatting
     root_formatting = logging.Formatter(fmt=format_str)
     global mute_errors

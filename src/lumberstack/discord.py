@@ -11,6 +11,11 @@ class DiscordHandler(CustomHandler):
         """
         Generates log output to the supplied Discord webhook
         """
+
+        # discord doesn't allow a username of discord
+        if name is not None and 'discord' in name.strip().lower():
+            raise ValueError(f'Cannot use name "{name}", Discord does not allow a bot name to contain the word "discord".')
+
         self.webhook_url = webhook_url
         self.mention_id = mention_id
         self.mention_id_threshold = mention_id_threshold

@@ -19,6 +19,7 @@ class NoisyLoggers:
         'cli.azure.cli.command_modules.resource._bicep',
         'cli.azure.cli.command_modules.resource.custom',
         'cli.azure.cli.command_modules.role.custom',
+        'cli.azure.cli.command_modules.storage._validators',
         'cli.azure.cli.command_modules.storage.custom',
         'cli.azure.cli.command_modules.vm.custom',
         'cli.azure.cli.core',

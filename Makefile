@@ -24,3 +24,6 @@ upgrade:
 update-test: build upload-test upgrade-test
 
 update: build upload upgrade
+
+install-local:
+	pip install --no-deps .

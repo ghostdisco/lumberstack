@@ -176,19 +176,19 @@ class Lumberstack:
   def _my_logger_(self):
     return Lumberstack(name='lumberstack')
 
-  def critical(self, msg):
+  def critical(self, msg = ''):
     self._log_(msg=msg, level=logging.CRITICAL)
 
-  def error(self, msg):
+  def error(self, msg = ''):
     self._log_(msg=msg, level=logging.ERROR)
 
-  def warning(self, msg):
+  def warning(self, msg = ''):
     self._log_(msg=msg, level=logging.WARNING)
 
-  def info(self, msg):
+  def info(self, msg = ''):
     self._log_(msg=msg, level=logging.INFO)
 
-  def debug(self, msg):
+  def debug(self, msg = ''):
     self._log_(msg=msg, level=logging.DEBUG)
 
   def _log_(self, msg: str, level: int):

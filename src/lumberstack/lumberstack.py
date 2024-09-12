@@ -1,5 +1,6 @@
 import datetime, inspect, logging, os, sys, time, typing
 from logging import Logger, Handler
+from .common_noisy_loggers import CommonNoisyLoggers
 from .constants import *
 from .custom_handler import CustomHandler
 
@@ -49,7 +50,7 @@ class Lumberstack:
 
   # run once from __main__
   @staticmethod
-  def global_init(timezone: time.struct_time = time.localtime, log_filename: str = None, log_level: int = logging.INFO, format_str: str = DEFAULT_FORMAT_STRING, console_output: bool = True, custom_handlers: list[logging.Handler] | list[CustomHandler] = None, mute_errors_from_lumberstack: bool = False):
+  def global_init(timezone: time.struct_time = time.localtime, log_filename: str = None, log_level: int = logging.INFO, format_str: str = DEFAULT_FORMAT_STRING, console_output: bool = True, custom_handlers: list[logging.Handler] | list[CustomHandler] = None, mute_errors_from_lumberstack: bool = False, noisy_loggers_log_level_override: int = None):
 
     # create parent directories if needed
     log_dirname = os.path.dirname(log_filename)
@@ -93,6 +94,10 @@ class Lumberstack:
     # mute me if you desire
     if mute_errors:
       Lumberstack.mute_library_logging(libraries='lumberstack')
+
+    # silence all noisy loggers
+    if noisy_loggers_log_level_override is not None:
+      Lumberstack.set_noisy_loggers_log_level(log_level=noisy_loggers_log_level_override)
 
   # add a handler
   @staticmethod
@@ -159,6 +164,12 @@ class Lumberstack:
   @staticmethod
   def mute_library_logging(libraries: str | list[str]):
     Lumberstack.force_update_library_levels(libraries=[libraries] if isinstance(libraries, str) else libraries, log_level=100)
+
+  # silence all noisy loggers
+  @staticmethod
+  def set_noisy_loggers_log_level(log_level: int = logging.ERROR):
+    Lumberstack.update_library_levels(libraries=CommonNoisyLoggers.HTTP, log_level=log_level)
+    Lumberstack.force_update_library_levels(libraries=CommonNoisyLoggers.AZURE, log_level=log_level)
 
   @property
   def _my_logger_(self):

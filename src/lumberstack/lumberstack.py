@@ -15,7 +15,7 @@ from .custom_handler import CustomHandler
 # NOTSET = 0
 
 class _Dummy_Logger_:
-  def __init__(self, name: str = 'dummy') -> None:
+  def __init__(self, name: str = 'dummy', create_console_output: bool = False) -> None:
     self.base = logging.getLogger(name=name)
     self.base.debug = _Dummy_Logger_._dummy_log_
     self.base.info = _Dummy_Logger_._dummy_log_
@@ -24,11 +24,21 @@ class _Dummy_Logger_:
     self.base.error = _Dummy_Logger_._dummy_log_
     self.base.critical = _Dummy_Logger_._dummy_log_
 
+    self.create_console_output = create_console_output
+
   @staticmethod
-  def _dummy_log_(arg0: 'typing.any' = None, arg1: 'typing.any' = None, 
+  def _static_dummy_log_(arg0: 'typing.any' = None, arg1: 'typing.any' = None, 
                   arg2: 'typing.any' = None, arg3: 'typing.any' = None, 
                   arg4: 'typing.any' = None, arg5: 'typing.any' = None):
     pass
+
+  def _dummy_log_(self, 
+                  arg0: 'typing.any' = None, arg1: 'typing.any' = None, 
+                  arg2: 'typing.any' = None, arg3: 'typing.any' = None, 
+                  arg4: 'typing.any' = None, arg5: 'typing.any' = None):
+    if self.create_console_output:
+      print(arg0)
+
 
 root_formatting: logging.Formatter = DEFAULT_FORMAT_STRING
 mute_errors: bool
@@ -149,17 +159,17 @@ class Lumberstack:
     for l in libraries:
       logger = Lumberstack.get_logger(name=l)
       if log_level > logging.DEBUG:
-        logger.debug = _Dummy_Logger_._dummy_log_
+        logger.debug = _Dummy_Logger_._static_dummy_log_
       if log_level > logging.INFO:
-        logger.info = _Dummy_Logger_._dummy_log_
+        logger.info = _Dummy_Logger_._static_dummy_log_
       if log_level > logging.WARN:
-        logger.warn = _Dummy_Logger_._dummy_log_
-        logger.warning = _Dummy_Logger_._dummy_log_
+        logger.warn = _Dummy_Logger_._static_dummy_log_
+        logger.warning = _Dummy_Logger_._static_dummy_log_
       if log_level > logging.ERROR:
-        logger.error = _Dummy_Logger_._dummy_log_
+        logger.error = _Dummy_Logger_._static_dummy_log_
       if log_level > logging.FATAL:
-        logger.fatal = _Dummy_Logger_._dummy_log_
-        logger.critical = _Dummy_Logger_._dummy_log_
+        logger.fatal = _Dummy_Logger_._static_dummy_log_
+        logger.critical = _Dummy_Logger_._static_dummy_log_
 
   # forcibly mute a logger
   @staticmethod

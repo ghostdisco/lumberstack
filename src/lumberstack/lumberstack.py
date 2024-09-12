@@ -203,7 +203,7 @@ class Lumberstack:
       self._my_logger_.error(str(error))
       return
 
-    if self.capitalize_messages:
+    if msg and self.capitalize_messages:
       msg = f'{msg[0].upper()}{msg[1:]}'
 
     # set last message and append message history

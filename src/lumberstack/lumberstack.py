@@ -60,13 +60,17 @@ class Lumberstack:
 
   # run once from __main__
   @staticmethod
-  def global_init(timezone: time.struct_time = time.localtime, log_filename: str = None, log_level: int = logging.INFO, format_str: str = DEFAULT_FORMAT_STRING, console_output: bool = True, custom_handlers: list[logging.Handler] | list[CustomHandler] = None, mute_errors_from_lumberstack: bool = False, noisy_loggers_log_level_override: int = None):
+  def global_init(timezone: time.struct_time = time.localtime, log_filename: str = None, create_new_file: bool = False, log_level: int = logging.INFO, format_str: str = DEFAULT_FORMAT_STRING, console_output: bool = True, custom_handlers: list[logging.Handler] | list[CustomHandler] = None, mute_errors_from_lumberstack: bool = False, noisy_loggers_log_level_override: int = None):
 
     # create parent directories if needed
     if log_filename:
       log_dirname = os.path.dirname(log_filename)
       if log_dirname and not os.path.exists(log_dirname):
         os.makedirs(log_dirname)
+
+    # create new log file
+    if log_filename and create_new_file and os.path.exists(log_filename):
+      os.remove(log_filename)
 
     # initialize global instance of logger module
     logging.Formatter.converter = timezone

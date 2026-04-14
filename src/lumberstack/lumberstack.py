@@ -162,6 +162,7 @@ class Lumberstack:
     
     for l in libraries:
       logger = Lumberstack.get_logger(name=l)
+      logger.setLevel(log_level)
       if log_level > logging.DEBUG:
         logger.debug = _Dummy_Logger_._static_dummy_log_
       if log_level > logging.INFO:

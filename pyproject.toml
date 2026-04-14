@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "lumberstack"
-version = "24.11.1900"
+version = "26.04.1400"
 authors = [
   { name="ghostdisco", email="pypi@ghostdisco.me" },
 ]
@@ -17,7 +17,8 @@ classifiers = [
     "Operating System :: OS Independent",
 ]
 dependencies = [
-  "logging>=0.4.9.6"
+  "logging>=0.4.9.6",
+  "requests"
 ]
 
 [project.urls]
